@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 import com.jwetherell.algorithms.graph.*;
 
 import org.junit.Assert;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import com.jwetherell.algorithms.data_structures.Graph;
 import com.jwetherell.algorithms.data_structures.Graph.Edge;
@@ -383,6 +385,19 @@ public class Graphs {
     }
 
     @Test
+    public void testDijkstraUndirectedForEmptyReturn() {
+        final UndirectedGraph undirected = new UndirectedGraph();
+        final Graph.Vertex<Integer> start = undirected.v1;
+        final Graph.Vertex<Integer> end = undirected.v5;
+        {   // UNDIRECTED GRAPH
+            final Map<Graph.Vertex<Integer>, Graph.CostPathPair<Integer>> map1 = Dijkstra.getShortestPaths(undirected.graph, start);
+
+            assertTrue(!map1.isEmpty());
+
+        }
+    }
+
+    @Test
     public void testBellmanFordUndirected() {
         final UndirectedGraph undirected = new UndirectedGraph();
         final Graph.Vertex<Integer> start = undirected.v1;
@@ -601,6 +616,22 @@ public class Graphs {
         }
     }
 
+    //Shah
+    @Test
+    public void testDijkstraAlgorithmDirectedWihtNegativeWeights() {
+        final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
+        {   // DIRECTED GRAPH (WITH NEGATIVE WEIGHTS)
+            final Graph.Vertex<Integer> start = directedWithNegWeights.v1;
+            final Graph.Vertex<Integer> end = directedWithNegWeights.v3;
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                Dijkstra.getShortestPaths(directedWithNegWeights.graph, start);});
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                Dijkstra.getShortestPath(directedWithNegWeights.graph, start, end);});
+        }
+    }
+
     @Test
     public void testJohnonsonsAllPairsShortestPathOnDirecteWithNegWeights() {
         final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
@@ -703,6 +734,19 @@ public class Graphs {
         }
     }
 
+
+    //Shah
+    @Test
+    public void testJohnonsonsAllPairsShortestPathOnDirecteWithNegWeightsEmptyValue() {
+        final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
+        {
+            final Map<Vertex<Integer>, Map<Vertex<Integer>, List<Edge<Integer>>>> path = Johnson.getAllPairsShortestPaths(directedWithNegWeights.graph);
+
+            //Verifies if the values returned are not empty list
+            assertTrue("Directed graph contains a negative weight cycle.", (!path.isEmpty()));
+        }
+    }
+
     @Test
     public void testFloydWarshallonDirectedWithNegWeights() {
         final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
@@ -780,6 +824,40 @@ public class Graphs {
                 }
 
             }
+
+        }
+    }
+
+    @Test
+    public void testFloydWarshallonDirected() {
+        final DirectedGraph directedGraph = new DirectedGraph();
+        {
+            final Map<Vertex<Integer>, Map<Vertex<Integer>, Integer>> pathWeights = FloydWarshall.getAllPairsShortestPaths(directedGraph.graph);
+
+            //verify if the map result is not empty
+            assertTrue(!pathWeights.isEmpty());
+
+            //verify if the cost returned for the paths are not invalid
+            for (Map<Vertex<Integer>, Integer> value: pathWeights.values()) {
+                for (Integer cost : value.values()) {
+                    assertTrue(cost != Integer.MAX_VALUE);
+                }
+
+            }
+        }
+    }
+
+
+    //Shah
+    public void testFloydWarshallonWithNullVerticesAndEdges() {
+
+        final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+        final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+        final Graph<Integer> graph = new Graph<Integer>(Graph.TYPE.DIRECTED, verticies, edges);
+        {
+            final Map<Vertex<Integer>, Map<Vertex<Integer>, Integer>> pathWeights = FloydWarshall.getAllPairsShortestPaths(graph);
+
+            assertTrue(!pathWeights.isEmpty());
         }
     }
 
@@ -967,6 +1045,27 @@ public class Graphs {
         }
     }
 
+
+    //Shah
+    @Test
+    public void testAStarUndirectedEmptyValue() {
+        final UndirectedGraph undirected = new UndirectedGraph();
+        final Graph.Vertex<Integer> start = undirected.v1;
+        final Graph.Vertex<Integer> end = undirected.v8;
+        {   // UNDIRECTED GRAPH
+            final AStar<Integer> aStar = new AStar<Integer>();
+            final List<Graph.Edge<Integer>> path = aStar.aStar(undirected.graph, start, end);
+
+            final List<Graph.Edge<Integer>> ideal = getIdealUndirectedPath(undirected).get(end).getPath();
+
+            //assertTrue("A* path error. path="+path+" idealPathPair="+ideal, path.equals(ideal));
+
+            //verify if the value returned is null or non empty list
+            assertTrue(path == null || !path.isEmpty());
+
+        }
+    }
+
     @Test
     public void testAStarDirected() {
         final DirectedGraph directed = new DirectedGraph();
@@ -977,6 +1076,33 @@ public class Graphs {
             final List<Graph.Edge<Integer>> path = aStar.aStar(directed.graph, start, end);
             final List<Graph.Edge<Integer>> ideal = getIdealDirectedPath(directed).get(end).getPath();
             assertTrue("A* path error. path="+path+" idealPathPair="+ideal, path.equals(ideal));
+        }
+    }
+
+
+    //Shah
+    @Test
+    public void testAStarDirectedWithSinglePath() {
+
+        final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+        final Graph.Vertex<Integer> v1 = new Graph.Vertex<Integer>(1);
+        final Graph.Vertex<Integer> v2 = new Graph.Vertex<Integer>(2);
+
+        verticies.add(v1);
+        verticies.add(v2);
+
+        final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+        final Graph.Edge<Integer> e2_1 = new Graph.Edge<Integer>(1, v2, v1);
+
+        edges.add(e2_1);
+
+        final Graph<Integer> graph = new Graph<Integer>(Graph.TYPE.DIRECTED, verticies, edges);
+
+        {   // DIRECTED GRAPH
+            final AStar<Integer> aStar = new AStar<Integer>();
+            final List<Graph.Edge<Integer>> path = aStar.aStar(graph, v1, v2);
+            //final List<Graph.Edge<Integer>> ideal = getIdealDirectedPath(directed).get(end).getPath();
+            assertTrue(path == null);
         }
     }
 

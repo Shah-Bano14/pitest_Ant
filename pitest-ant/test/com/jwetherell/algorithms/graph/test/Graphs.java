@@ -384,6 +384,11 @@ public class Graphs {
         }
     }
 
+    /**
+     * This test verifies if the retuned value from the undirected graph is
+     * not empty list
+     * expected : map or null
+     */
     @Test
     public void testDijkstraUndirectedForEmptyReturn() {
         final UndirectedGraph undirected = new UndirectedGraph();
@@ -616,7 +621,10 @@ public class Graphs {
         }
     }
 
-    //Shah
+    /**
+     * This test returns exception if the graph has negative weights
+     * as Dijkstra algorithm doesnt work for negative weights
+     */
     @Test
     public void testDijkstraAlgorithmDirectedWihtNegativeWeights() {
         final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
@@ -735,7 +743,10 @@ public class Graphs {
     }
 
 
-    //Shah
+    /**
+     * This test verifies that the returned values from the algorithm
+     * is not an empty map but should be bull or map of inputs
+     */
     @Test
     public void testJohnonsonsAllPairsShortestPathOnDirecteWithNegWeightsEmptyValue() {
         final DirectedWithNegativeWeights directedWithNegWeights = new DirectedWithNegativeWeights();
@@ -828,6 +839,10 @@ public class Graphs {
         }
     }
 
+    /**
+     * This test verifies if the algorithm returned value is not empty
+     * This test also verifies if the cost values are not Integer Max value
+     */
     @Test
     public void testFloydWarshallonDirected() {
         final DirectedGraph directedGraph = new DirectedGraph();
@@ -848,7 +863,11 @@ public class Graphs {
     }
 
 
-    //Shah
+    /**
+     * This test verifies that the values returned by passing null edges and
+     * vertices is null and not an empty list
+     */
+    @Test
     public void testFloydWarshallonWithNullVerticesAndEdges() {
 
         final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
@@ -1046,7 +1065,10 @@ public class Graphs {
     }
 
 
-    //Shah
+    /**
+     * This test verifies if the returned value from an undirectde graph with no path returns null
+     * and is not empty
+     */
     @Test
     public void testAStarUndirectedEmptyValue() {
         final UndirectedGraph undirected = new UndirectedGraph();
@@ -1080,7 +1102,10 @@ public class Graphs {
     }
 
 
-    //Shah
+    /**
+     * This test verifies if the returned value is null
+     * when an input with no path between vertices is passed as an input
+     */
     @Test
     public void testAStarDirectedWithSinglePath() {
 
@@ -1092,16 +1117,14 @@ public class Graphs {
         verticies.add(v2);
 
         final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
-        final Graph.Edge<Integer> e2_1 = new Graph.Edge<Integer>(1, v2, v1);
 
-        edges.add(e2_1);
 
         final Graph<Integer> graph = new Graph<Integer>(Graph.TYPE.DIRECTED, verticies, edges);
 
         {   // DIRECTED GRAPH
             final AStar<Integer> aStar = new AStar<Integer>();
             final List<Graph.Edge<Integer>> path = aStar.aStar(graph, v1, v2);
-            //final List<Graph.Edge<Integer>> ideal = getIdealDirectedPath(directed).get(end).getPath();
+
             assertTrue(path == null);
         }
     }

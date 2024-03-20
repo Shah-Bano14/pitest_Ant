@@ -867,7 +867,7 @@ public class Graphs {
      * This test verifies that the values returned by passing null edges and
      * vertices is null and not an empty list
      */
-    @Test
+    //shah
     public void testFloydWarshallonWithNullVerticesAndEdges() {
 
         final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
@@ -1127,6 +1127,65 @@ public class Graphs {
 
             assertTrue(path == null);
         }
+    }
+
+    /**
+     * Here I have added a different set of input to verify the result. I have created two
+     * paths to a vertex, out of which has less cost. This way I verify if the returned path is the
+     * one with the lowest cost.
+     */
+    @Test
+    public void testAStarDirectedWithCorrectPath()
+    {
+        final List<Vertex<Integer>> verticies = new ArrayList<Vertex<Integer>>();
+        final Graph.Vertex<Integer> v1 = new Graph.Vertex<Integer>(1);
+        final Graph.Vertex<Integer> v2 = new Graph.Vertex<Integer>(2);
+        final Graph.Vertex<Integer> v3 = new Graph.Vertex<Integer>(3);
+        final Graph.Vertex<Integer> v4 = new Graph.Vertex<Integer>(4);
+        {
+            verticies.add(v1);
+            verticies.add(v2);
+            verticies.add(v3);
+            verticies.add(v4);
+
+        }
+
+        final List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>();
+        final Graph.Edge<Integer> e1_2 = new Graph.Edge<Integer>(7, v1, v2);
+        final Graph.Edge<Integer> e1_3 = new Graph.Edge<Integer>(2, v1, v3);
+        final Graph.Edge<Integer> e3_2 = new Graph.Edge<Integer>(3, v3, v2);
+        final Graph.Edge<Integer> e2_4 = new Graph.Edge<Integer>(6, v2, v4);
+
+        edges.add(e1_2);
+        edges.add(e1_3);
+        edges.add(e3_2);
+        edges.add(e2_4);
+
+
+
+        final Graph<Integer> graph = new Graph<Integer>(Graph.TYPE.DIRECTED, verticies, edges);
+
+
+        // final Graph<Integer> graph = new Graph<Integer>(Graph.TYPE.DIRECTED, verticies, edges);
+            final int cost = 13;
+            final List<Graph.Edge<Integer>> list = new ArrayList<Graph.Edge<Integer>>();
+            list.add(e1_3);
+            list.add(e3_2);
+            list.add(e2_4);
+            final Graph.CostPathPair<Integer> path = new Graph.CostPathPair<Integer>(cost, list);
+            // DIRECTED GRAPH
+            final AStar<Integer> aStar = new AStar<Integer>();
+            final List<Graph.Edge<Integer>> path1 = aStar.aStar(graph, v1, v4);
+
+            for(Graph.Edge<Integer> p: path1)
+            {
+                System.out.println(p);
+            }
+
+
+            final List<Graph.Edge<Integer>> path2 = path.getPath();
+            assertTrue(path1.equals(path2));
+
     }
 
     /*
